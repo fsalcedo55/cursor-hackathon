@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RaiseSignal — Fundraising OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* palette — overridden at runtime by tweaks on #rs-root */
+    --primary: #3B4EE8;
+    --primary-600: color-mix(in srgb, var(--primary), #000 13%);
+    --primary-700: color-mix(in srgb, var(--primary), #000 28%);
+    --primary-soft: color-mix(in srgb, var(--primary), #fff 89%);
+    --primary-tint: color-mix(in srgb, var(--primary), #fff 94%);
+    --cyan: #2BB6E8;
+    --cyan-soft: #E4F6FD;
+
+    --ink: #0E1426;
+    --ink-2: #545E76;
+    --ink-3: #8A93A8;
+    --ink-4: #AEB6C7;
+
+    --success: #12936A;
+    --success-soft: #E2F5ED;
+    --warning: #D9870E;
+    --warning-soft: #FBF1DE;
+    --danger: #DB4444;
+    --danger-soft: #FCE9E9;
+
+    --bg: #F4F8FF;
+    --bg-2: #ECF2FF;
+    --card: #FFFFFF;
+    --hairline: #E9EEF8;
+    --hairline-2: #EFF3FB;
+
+    --r-card: 22px;
+    --r-sm: 14px;
+    --r-xs: 10px;
+
+    --shadow-sm: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.05);
+    --shadow-md: 0 2px 4px rgba(16,24,40,0.04), 0 8px 24px rgba(28,40,80,0.06);
+    --shadow-lg: 0 10px 30px rgba(28,40,80,0.10), 0 2px 6px rgba(16,24,40,0.05);
+
+    --sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: var(--sans);
+    background:
+      radial-gradient(1200px 600px at 15% -5%, #EAF0FF 0%, transparent 55%),
+      radial-gradient(900px 500px at 95% 10%, #EDF8FD 0%, transparent 50%),
+      #EEF2FA;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  #stage {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px 16px;
+  }
+
+  /* ---- typography helpers ---- */
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+  /* ---- scrollbars hidden inside phone ---- */
+  .rs-scroll::-webkit-scrollbar { width: 0; height: 0; }
+  .rs-scroll { scrollbar-width: none; }
+
+  /* ---- screen transitions ---- */
+  @keyframes rs-fwd { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes rs-back { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes rs-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .anim-fwd { animation: rs-fwd .34s cubic-bezier(.22,.61,.36,1); }
+  .anim-back { animation: rs-back .32s cubic-bezier(.22,.61,.36,1); }
+  .anim-tab { animation: rs-fade .3s ease; }
+
+  /* staggered card reveal */
+  @keyframes rs-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .rise { animation: rs-rise .5s cubic-bezier(.22,.61,.36,1) both; }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-fwd, .anim-back, .anim-tab, .rise { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- React + Babel (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="rs-icons.jsx"></script>
+  <script type="text/babel" src="rs-ui.jsx?v=2"></script>
+  <script type="text/babel" src="rs-screens-a.jsx"></script>
+  <script type="text/babel" src="rs-screens-b.jsx?v=3"></script>
+  <script type="text/babel" src="rs-app.jsx?v=8"></script>
+</body>
+</html>
