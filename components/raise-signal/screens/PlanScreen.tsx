@@ -38,16 +38,16 @@ export function PlanScreen({ go, analysis }: PlanScreenProps) {
           pad={20}
           style={{
             background:
-              "linear-gradient(160deg, var(--primary) 0%, var(--primary-600) 100%)",
+              "linear-gradient(160deg, var(--agent) 0%, var(--ink) 100%)",
             border: "none",
-            boxShadow: "0 14px 34px -10px rgba(49,64,206,0.55)",
+            boxShadow: "0 18px 44px rgba(24,24,27,0.18)",
           }}
         >
           <div className="flex items-center justify-between">
             <span className="text-[11.5px] font-semibold tracking-[0.07em] text-white/72 uppercase">
               Recommended round
             </span>
-            <span className="rounded-full bg-white/18 px-2.5 py-1 text-xs font-[650] text-white">
+            <span className="rounded-full bg-amber-300 px-2.5 py-1 text-xs font-[650] text-zinc-950">
               {plan.round}
             </span>
           </div>

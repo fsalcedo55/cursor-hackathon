@@ -28,7 +28,7 @@ type DashboardScreenProps = {
 
 const legendColors: Record<string, { color: string; bg: string }> = {
   Strong: { color: "var(--success)", bg: "var(--success-soft)" },
-  Good: { color: "var(--primary)", bg: "var(--primary-soft)" },
+  Good: { color: "var(--primary-700)", bg: "var(--primary-soft)" },
   "Needs work": { color: "var(--warning)", bg: "var(--warning-soft)" },
   Missing: { color: "var(--danger)", bg: "var(--danger-soft)" },
 };
@@ -142,7 +142,7 @@ export function DashboardScreen({
           pad={20}
           style={{
             background:
-              "linear-gradient(160deg, #FBFCFF 0%, var(--primary-tint) 100%)",
+              "linear-gradient(160deg, rgba(255,255,255,0.94) 0%, var(--primary-tint) 100%)",
             overflow: "hidden",
           }}
         >
@@ -163,7 +163,7 @@ export function DashboardScreen({
           </p>
           <div className="flex gap-2">
             <Button size="sm" full icon="bolt" onClick={() => go("improve")}>
-              Improve score
+              Prioritize fixes
             </Button>
             <Button
               size="sm"
@@ -172,7 +172,7 @@ export function DashboardScreen({
               icon="flag"
               onClick={() => go("plan")}
             >
-              View plan
+              Review raise plan
             </Button>
           </div>
         </Card>
@@ -244,8 +244,8 @@ export function DashboardScreen({
             <div
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] text-[19px] font-bold text-white"
               style={{
-                background: "linear-gradient(145deg, #6D5CF0, #3B4EE8)",
-                boxShadow: "0 4px 12px -4px rgba(49,64,206,0.5)",
+                background: "linear-gradient(145deg, var(--agent), var(--ink))",
+                boxShadow: "0 6px 16px -8px rgba(24,24,27,0.55)",
               }}
             >
               {company.initials}
@@ -301,7 +301,7 @@ export function DashboardScreen({
             />
           </div>
           <div
-            className="rounded-[13px] border-l-[3px] border-[var(--primary)] bg-[var(--bg)] px-3.5 py-3"
+            className="rounded-[13px] border-l-[3px] border-[var(--primary-700)] bg-[var(--primary-tint)] px-3.5 py-3"
           >
             <p className="m-0 text-[13.5px] leading-normal text-[var(--ink-2)] italic">
               &ldquo;{company.summary}&rdquo;
@@ -420,7 +420,7 @@ export function DashboardScreen({
                         ? `Generating slide ${deckGeneration.activeSlideNumber || 1}`
                         : deckGeneration.status === "complete"
                           ? "Deck generated"
-                          : "Generate investor deck"}
+                      : "Draft investor deck"}
                     </div>
                     <p className="mt-1 mb-0 text-[12.5px] leading-[1.35] text-[var(--ink-3)]">
                       {deckGeneration.status === "idle"
@@ -444,7 +444,7 @@ export function DashboardScreen({
                   disabled={deckGeneration.status === "generating"}
                   style={{ marginTop: 12 }}
                 >
-                  {deckGeneration.status === "complete" ? "Regenerate deck" : "Generate deck"}
+                  {deckGeneration.status === "complete" ? "Refresh deck draft" : "Draft investor deck"}
                 </Button>
               </div>
               <div className="mt-1.5">

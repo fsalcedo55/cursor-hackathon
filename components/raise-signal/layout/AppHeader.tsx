@@ -26,7 +26,7 @@ export function AppHeader({
       className={`sticky top-0 z-30 ${pageX} ${headerTop} pb-3 backdrop-blur-[6px]`}
       style={{
         background:
-          "linear-gradient(180deg, var(--bg) 72%, rgba(244,248,255,0))",
+          "linear-gradient(180deg, rgba(248,241,229,0.96) 72%, rgba(248,241,229,0))",
       }}
     >
       <div className="flex min-h-10 items-center gap-2.5">
@@ -34,7 +34,7 @@ export function AppHeader({
           <button
             type="button"
             onClick={onBack}
-            className="-ml-0.5 flex h-[38px] w-[38px] items-center justify-center rounded-xl border border-[var(--hairline)] bg-[var(--card)] text-[var(--ink)] shadow-[var(--shadow-sm)]"
+            className="-ml-0.5 flex h-[38px] w-[38px] items-center justify-center rounded-xl border border-[var(--hairline)] bg-white/85 text-[var(--ink)] shadow-[var(--shadow-sm)]"
           >
             <Icon name="back" size={20} />
           </button>

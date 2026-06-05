@@ -60,9 +60,9 @@ export function AnalyzeScreen({
 
       <div className={`${bodyPad} lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-6`}>
         <div className="rise mb-5.5 mt-4 sm:mt-5 lg:mb-0 lg:max-w-none">
-          <Eyebrow style={{ color: "var(--primary)" }}>Fundraising OS</Eyebrow>
+          <Eyebrow style={{ color: "var(--primary-700)" }}>Fundraising agent</Eyebrow>
           <h1 className="mt-2.5 mb-2.5 text-[34px] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-[var(--ink)] sm:text-4xl lg:max-w-[720px] lg:text-[64px]">
-            Get investor-ready
+            Build your raise signal
           </h1>
           <p className="m-0 max-w-2xl text-[15px] leading-normal text-[var(--ink-2)] sm:text-base lg:text-lg">
             Paste your startup URL. We&apos;ll analyze your business, metrics,
@@ -85,7 +85,7 @@ export function AnalyzeScreen({
             />
           </div>
           <Button full icon="spark" onClick={onAnalyze} disabled={analyzing}>
-            {analyzing ? "Analyzing..." : "Analyze startup"}
+            {analyzing ? "Building signal..." : "Build my raise signal"}
           </Button>
           {error && (
             <div className="mt-3 flex gap-2 rounded-[13px] bg-[var(--danger-soft)] px-3 py-3 text-[12.5px] leading-[1.45] text-[var(--danger)]">
@@ -115,7 +115,7 @@ export function AnalyzeScreen({
                 style={{
                   borderColor: on ? "var(--primary)" : "var(--hairline)",
                   boxShadow: on
-                    ? "0 4px 14px -6px rgba(49,64,206,0.45)"
+                    ? "0 6px 18px -10px rgba(120,53,15,0.55)"
                     : "var(--shadow-sm)",
                 }}
               >
@@ -148,19 +148,19 @@ export function AnalyzeScreen({
           tone="tint"
           style={{
             background:
-              "linear-gradient(165deg, #FBFCFF 0%, var(--primary-tint) 100%)",
+              "linear-gradient(165deg, rgba(255,255,255,0.92) 0%, var(--primary-tint) 100%)",
           }}
         >
           <div className="mb-3.5 flex items-center gap-2">
-            <Icon name="rocket" size={19} color="var(--primary)" />
+            <Icon name="rocket" size={19} color="var(--primary-700)" />
             <span className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--ink)]">
-              Everything you need to raise with confidence
+              A raise workflow ready for approval
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
             {FEATURES.map((f) => (
               <div key={f.t} className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-white/90 text-[var(--primary)] shadow-[var(--shadow-sm)]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-white/90 text-[var(--primary-700)] shadow-[var(--shadow-sm)]">
                   <Icon name={f.icon} size={16} />
                 </div>
                 <span className="text-sm font-[550] text-[var(--ink)]">

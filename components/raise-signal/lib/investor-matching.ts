@@ -189,7 +189,7 @@ function matchInvestor(profile: LocalInvestorProfile, analysis: InvestorMatching
     recommendedAction:
       tier === "Warm intro candidates"
         ? "Ask for a warm path before sending the deck."
-        : "Review the email drop and approve founder outreach.",
+        : "Review the outreach draft and approve founder outreach.",
     pipelineStatus: statusFor(tier, fit),
     outreachDraft: draftFor({
       analysis,

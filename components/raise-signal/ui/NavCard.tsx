@@ -15,7 +15,7 @@ export function NavCard({ icon, title, sub, onClick }: NavCardProps) {
       className="flex flex-col gap-2.5 rounded-[var(--r-card)] border border-[var(--hairline)] bg-[var(--card)] p-[15px] text-left shadow-[var(--shadow-md)]"
     >
       <div className="flex items-center justify-between">
-        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[var(--primary-soft)] text-[var(--primary)]">
+        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[var(--primary-soft)] text-[var(--primary-700)]">
           <Icon name={icon} size={18} />
         </div>
         <Icon name="arrowUpRight" size={18} color="var(--ink-4)" />
