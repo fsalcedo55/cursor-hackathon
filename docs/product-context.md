@@ -1,10 +1,25 @@
 # Product Context: Fundraising Features
 
-This repository is evolving toward RaiseSignal, a founder-facing fundraising assistant. The product should help startups identify the right investors, prepare stronger fundraising materials, and enter investor conversations with better context.
+This repository is evolving toward RaiseSignal, a founder-facing fundraising agent. The product should help startups hand off as much of the capital-raise workflow as possible: identifying the right investors, preparing stronger fundraising materials, generating personalized outreach, prepping meetings, and keeping follow-ups moving.
 
-Use this document as planning context for future implementation work. It is not a finalized spec, but it captures the major feature areas and the product intent behind them.
+Use this document as planning context for future implementation work. It is not a finalized spec, but it captures the major feature areas and the product intent behind them: the most automated way for a founder to raise capital without promising guaranteed funding or removing founder approval from high-stakes decisions.
 
 ## Core Feature Areas
+
+### Fundraising Agent Orchestration
+
+The core product experience should feel like a founder can tell RaiseSignal: "Here is my company. Raise capital for me."
+
+The agent should translate that instruction into a structured fundraising workflow:
+
+- Understand the startup, raise amount, stage, sector, traction, geography, and ideal investor profile
+- Build and maintain a prioritized investor pipeline
+- Recommend what to fix in the deck and narrative before outreach
+- Draft investor-specific outreach, warm intro requests, follow-ups, and meeting prep
+- Track investor status, next steps, and recommended actions across the raise
+- Ask the founder for approval before external communication or other high-stakes actions
+
+The founder remains the decision-maker, but the product should reduce the manual operating load of fundraising as much as possible.
 
 ### Investor Discovery & Matching
 
@@ -26,7 +41,7 @@ Matching and filtering should account for:
 - Portfolio overlap
 - Existing investments in direct or adjacent competitors
 
-The goal is to prioritize investors who are both likely to be interested and strategically appropriate for the startup.
+The goal is to prioritize investors who are both likely to be interested and strategically appropriate for the startup, then turn those matches into an actionable pipeline the agent can help move forward.
 
 ### Pitch Deck Generator / Analyzer
 
@@ -50,9 +65,9 @@ Expected outputs:
 - Narrative strength score
 - Recommendations for missing or underdeveloped sections
 
-### Investor Email / Outreach Generator
+### Investor Email / Outreach Agent
 
-Given an investor profile and startup context, generate a personalized investor outreach message.
+Given an investor profile and startup context, generate personalized investor outreach and recommend when to send it.
 
 The message should be usable for:
 
@@ -68,7 +83,7 @@ Personalization inputs may include:
 - Relevant prior investments
 - Startup stage, sector, traction, and fundraising ask
 
-The output should feel specific to the investor, not like a generic fundraising template.
+The output should feel specific to the investor, not like a generic fundraising template. The agent should keep founder approval in the loop before sending or queuing external messages.
 
 ### Fundraising Q&A Coach
 
@@ -90,7 +105,7 @@ Feedback should cover:
 - Confidence and delivery
 - Follow-up points the founder should prepare
 
-### Investor Research Agent
+### Investor Research & Meeting Prep Agent
 
 Given a target investor's name, generate a briefing memo before a meeting.
 
@@ -110,6 +125,21 @@ Expected output:
 - Potential objections or questions the investor may raise
 - Suggested meeting strategy
 
+### Fundraising Workflow Tracker
+
+Maintain the operational layer of the raise so founders do not have to manage every investor interaction manually.
+
+The tracker should support:
+
+- Investor pipeline stages
+- Recommended next action per investor
+- Follow-up reminders and drafts
+- Meeting prep status
+- Notes from calls
+- Open questions, objections, and unresolved diligence items
+
+The tracker should help the agent decide what to recommend next, not just store CRM data.
+
 ## Product Principles
 
 - Prefer curated, high-signal investor data over broad but noisy scraping.
@@ -118,6 +148,8 @@ Expected output:
 - Treat fundraising communication as high-stakes: preserve founder voice and avoid overclaiming.
 - Be careful with competitor detection and portfolio-overlap logic, since false positives can hide useful investors.
 - Keep generated outreach concise, specific, and easy for a founder to edit.
+- Optimize for autonomous workflow progress, but require founder approval for external communication and consequential decisions.
+- Frame the product as an agent that runs the fundraising process, not a passive copilot that only answers questions.
 
 ## Future Implementation Notes
 
@@ -126,3 +158,4 @@ Expected output:
 - Outreach generation should separate reusable startup context from investor-specific research.
 - Research-agent outputs should cite sources whenever browsing or external data is used.
 - Q&A coaching may benefit from storing practice sessions so founders can track improvement over time.
+- The agent workflow will likely need persistent fundraising state: investor pipeline records, statuses, next actions, meeting notes, approval history, and follow-up reminders.
