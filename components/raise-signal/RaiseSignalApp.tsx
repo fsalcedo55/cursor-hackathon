@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AppShell } from "./layout/AppShell";
 import { BottomNav, type TabId } from "./layout/BottomNav";
 import { TopNav } from "./layout/TopNav";
+import { buildDeckSlides } from "./lib/deck-generation";
 import { AnalyzeOverlay } from "./screens/AnalyzeOverlay";
 import { AnalyzeScreen } from "./screens/AnalyzeScreen";
 import { DashboardScreen } from "./screens/DashboardScreen";
@@ -12,7 +13,7 @@ import { DeckScreen } from "./screens/DeckScreen";
 import { ImproveScreen } from "./screens/ImproveScreen";
 import { InvestorsScreen } from "./screens/InvestorsScreen";
 import { PlanScreen } from "./screens/PlanScreen";
-import type { RaiseSignalAnalysis, ScreenId } from "./types";
+import type { DeckGeneration, RaiseSignalAnalysis, ScreenId } from "./types";
 
 const TABS: TabId[] = ["analyze", "dashboard", "investors"];
 
@@ -21,11 +22,16 @@ export function RaiseSignalApp() {
   const [dir, setDir] = useState<"fwd" | "back" | "tab">("fwd");
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<RaiseSignalAnalysis | null>(null);
+  const [deckGeneration, setDeckGeneration] = useState<DeckGeneration>({
+    status: "idle",
+    slides: [],
+  });
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [url, setUrl] = useState("https://cursor.com");
   const [connected, setConnected] = useState<Record<string, boolean>>({
     Stripe: true,
   });
+  const deckGenerationRun = useRef(0);
 
   const screen = hist[hist.length - 1];
 
@@ -55,6 +61,12 @@ export function RaiseSignalApp() {
     setConnected((c) => ({ ...c, [name]: !c[name] }));
   }
 
+  function updateAnalysis(nextAnalysis: RaiseSignalAnalysis) {
+    deckGenerationRun.current += 1;
+    setAnalysis(nextAnalysis);
+    setDeckGeneration({ status: "idle", slides: [] });
+  }
+
   async function analyzeStartup() {
     setAnalyzing(true);
     setAnalysisError(null);
@@ -78,6 +90,7 @@ export function RaiseSignalApp() {
       }
 
       setAnalysis(payload.analysis);
+      setDeckGeneration({ status: "idle", slides: [] });
       setDir("fwd");
       setHist(["dashboard"]);
     } catch (error) {
@@ -86,6 +99,45 @@ export function RaiseSignalApp() {
       );
     } finally {
       setAnalyzing(false);
+    }
+  }
+
+  async function generateDeck() {
+    if (!analysis || deckGeneration.status === "generating") return;
+
+    const runId = deckGenerationRun.current + 1;
+    deckGenerationRun.current = runId;
+    const slideDrafts = buildDeckSlides(analysis);
+
+    setDir("fwd");
+    setHist(["deck"]);
+    setDeckGeneration({
+      status: "generating",
+      activeSlideNumber: slideDrafts[0]?.n,
+      slides: [],
+    });
+
+    for (const slide of slideDrafts) {
+      setDeckGeneration((current) => ({
+        ...current,
+        activeSlideNumber: slide.n,
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 550));
+      if (deckGenerationRun.current !== runId) return;
+
+      setDeckGeneration((current) => ({
+        status: "generating",
+        activeSlideNumber: slide.n,
+        slides: [...current.slides, slide],
+      }));
+    }
+
+    if (deckGenerationRun.current === runId) {
+      setDeckGeneration({
+        status: "complete",
+        slides: slideDrafts,
+      });
     }
   }
 
@@ -105,7 +157,13 @@ export function RaiseSignalApp() {
         );
       case "dashboard":
         return analysis ? (
-          <DashboardScreen go={go} analysis={analysis} onAnalysisChange={setAnalysis} />
+          <DashboardScreen
+            go={go}
+            analysis={analysis}
+            onAnalysisChange={updateAnalysis}
+            deckGeneration={deckGeneration}
+            onGenerateDeck={generateDeck}
+          />
         ) : (
           <AnalyzeScreen
             url={url}
@@ -122,7 +180,14 @@ export function RaiseSignalApp() {
       case "investors":
         return analysis ? <InvestorsScreen go={go} analysis={analysis} /> : null;
       case "deck":
-        return analysis ? <DeckScreen go={go} analysis={analysis} /> : null;
+        return analysis ? (
+          <DeckScreen
+            go={go}
+            analysis={analysis}
+            deckGeneration={deckGeneration}
+            onGenerateDeck={generateDeck}
+          />
+        ) : null;
       case "improve":
         return analysis ? <ImproveScreen go={go} analysis={analysis} /> : null;
       default:

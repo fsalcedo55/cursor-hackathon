@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { mergeDataRoomItems, mergeDeckSlides } from "@/components/raise-signal/lib/deck-outline";
+
 const scoreItemSchema = z.object({
   label: z.string(),
   v: z.number().int().min(0).max(100),
@@ -522,6 +524,12 @@ function completeAnalysisEstimates(analysis: Analysis, pageText: string, url: st
         { t: `Raise range calibrated to ${plan.round}`, ok: true },
       ],
     },
+    deck: {
+      ...analysis.deck,
+      readiness: Math.max(analysis.deck.readiness, 65),
+      slides: mergeDeckSlides(analysis.deck.slides),
+      dataRoom: mergeDataRoomItems(analysis.deck.dataRoom),
+    },
   };
 }
 
@@ -646,8 +654,29 @@ Return this JSON shape exactly. Every array must contain at least one item; incl
   "investors": [{"name":"investor","fit":0-100,"initials":"VC","color":"#3B4EE8","stage":"Seed","activity":"Recently active","why":["reason","reason","reason"]}],
   "deck": {
     "readiness": 0-100,
-    "slides": [{"n":1,"t":"Cover","s":"Strong"}],
-    "dataRoom": [{"t":"Company overview","s":"Done"}]
+    "slides": [
+      {"n":1,"t":"Cover","s":"Strong"},
+      {"n":2,"t":"Problem","s":"Good"},
+      {"n":3,"t":"Solution","s":"Good"},
+      {"n":4,"t":"Market","s":"Needs work"},
+      {"n":5,"t":"Product","s":"Good"},
+      {"n":6,"t":"Traction","s":"Needs work"},
+      {"n":7,"t":"Business Model","s":"Good"},
+      {"n":8,"t":"Competition","s":"Needs work"},
+      {"n":9,"t":"Go-to-market","s":"Needs work"},
+      {"n":10,"t":"Financials","s":"Needs work"},
+      {"n":11,"t":"The Ask","s":"Good"},
+      {"n":12,"t":"Team","s":"Good"}
+    ],
+    "dataRoom": [
+      {"t":"Company overview","s":"Done"},
+      {"t":"Metrics summary","s":"Done"},
+      {"t":"Cap table","s":"Missing"},
+      {"t":"Financial model","s":"Missing"},
+      {"t":"Legal docs","s":"Missing"},
+      {"t":"Product screenshots","s":"Suggested"},
+      {"t":"Investor FAQ","s":"Suggested"}
+    ]
   },
   "improvements": [{"t":"action","impact":8,"d":"description","icon":"coins"}]
 }

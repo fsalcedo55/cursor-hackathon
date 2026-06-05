@@ -76,6 +76,20 @@ export type DeckSlide = {
   s: SignalStatus;
 };
 
+export type GeneratedDeckSlide = {
+  n: number;
+  t: string;
+  headline: string;
+  speakerNotes: string;
+  sourceFacts: string[];
+};
+
+export type DeckGeneration = {
+  status: "idle" | "generating" | "complete";
+  slides: GeneratedDeckSlide[];
+  activeSlideNumber?: number;
+};
+
 export type DataRoomItem = {
   t: string;
   s: DataRoomStatus;

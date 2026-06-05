@@ -6,6 +6,7 @@ import { Icon } from "../icons/Icon";
 import { AppHeader } from "../layout/AppHeader";
 import { IconButton } from "../layout/IconButton";
 import { bodyPad, ScreenScroll } from "../layout/ScreenScroll";
+import { mergeDataRoomItems, mergeDeckSlides } from "../lib/deck-outline";
 import { scoreColor } from "../lib/score";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -15,12 +16,14 @@ import { Eyebrow } from "../ui/Eyebrow";
 import { NavCard } from "../ui/NavCard";
 import { SlideTile } from "../ui/SlideTile";
 import { StatusPill, type StatusType } from "../ui/StatusPill";
-import type { GoFn, RaiseSignalAnalysis } from "../types";
+import type { DeckGeneration, GoFn, RaiseSignalAnalysis } from "../types";
 
 type DashboardScreenProps = {
   go: GoFn;
   analysis: RaiseSignalAnalysis;
   onAnalysisChange: (analysis: RaiseSignalAnalysis) => void;
+  deckGeneration: DeckGeneration;
+  onGenerateDeck: () => void;
 };
 
 const legendColors: Record<string, { color: string; bg: string }> = {
@@ -73,9 +76,19 @@ export function DashboardScreen({
   go,
   analysis,
   onAnalysisChange,
+  deckGeneration,
+  onGenerateDeck,
 }: DashboardScreenProps) {
   const { company } = analysis;
-  const deckCounts = analysis.deck.slides.reduce(
+  const deckSlides = mergeDeckSlides(analysis.deck.slides);
+  const dataRoomItems = mergeDataRoomItems(analysis.deck.dataRoom);
+  const totalSlides = deckSlides.length;
+  const generatedSlideCount = deckGeneration.slides.length;
+  const deckGenerationProgress = Math.round((generatedSlideCount / totalSlides) * 100);
+  const activeGeneratedSlide =
+    deckGeneration.slides[deckGeneration.slides.length - 1] ||
+    deckSlides.find((slide) => slide.n === deckGeneration.activeSlideNumber);
+  const deckCounts = deckSlides.reduce(
     (acc, slide) => {
       acc[slide.s] = (acc[slide.s] || 0) + 1;
       return acc;
@@ -379,24 +392,63 @@ export function DashboardScreen({
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-              {analysis.deck.slides.map((slide) => (
+              {deckSlides.map((slide) => (
                 <SlideTile key={slide.n} {...slide} />
               ))}
             </div>
             <div>
               <ProgressBar
-                value={analysis.deck.readiness}
-                color="var(--warning)"
+                value={
+                  deckGeneration.status === "idle"
+                    ? analysis.deck.readiness
+                    : deckGenerationProgress
+                }
+                color={deckGeneration.status === "complete" ? "var(--success)" : "var(--warning)"}
                 height={8}
               />
+              <div className="mt-3 rounded-[13px] bg-[var(--bg)] px-3.5 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[13.5px] font-[650] text-[var(--ink)]">
+                      {deckGeneration.status === "generating"
+                        ? `Generating slide ${deckGeneration.activeSlideNumber || 1}`
+                        : deckGeneration.status === "complete"
+                          ? "Deck generated"
+                          : "Generate investor deck"}
+                    </div>
+                    <p className="mt-1 mb-0 text-[12.5px] leading-[1.35] text-[var(--ink-3)]">
+                      {deckGeneration.status === "idle"
+                        ? "Uses the latest company profile and revenue metrics."
+                        : `${generatedSlideCount}/${totalSlides} slides ready${
+                            activeGeneratedSlide ? ` · ${activeGeneratedSlide.t}` : ""
+                          }`}
+                    </p>
+                  </div>
+                  <span className="num shrink-0 text-sm font-semibold text-[var(--ink-2)]">
+                    {deckGeneration.status === "idle"
+                      ? `${analysis.deck.readiness}%`
+                      : `${deckGenerationProgress}%`}
+                  </span>
+                </div>
+                <Button
+                  full
+                  size="sm"
+                  icon="spark"
+                  onClick={onGenerateDeck}
+                  disabled={deckGeneration.status === "generating"}
+                  style={{ marginTop: 12 }}
+                >
+                  {deckGeneration.status === "complete" ? "Regenerate deck" : "Generate deck"}
+                </Button>
+              </div>
               <div className="mt-1.5">
-                {analysis.deck.dataRoom.map((item, index) => (
+                {dataRoomItems.map((item, index) => (
                   <div
                     key={item.t}
                     className="flex items-center gap-2.5 py-3"
                     style={{
                       borderBottom:
-                        index === analysis.deck.dataRoom.length - 1
+                        index === dataRoomItems.length - 1
                           ? "none"
                           : "1px solid var(--hairline-2)",
                     }}
