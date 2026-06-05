@@ -1,29 +1,37 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { ProgressBar } from "../charts/ProgressBar";
 import { ScoreRing } from "../charts/ScoreRing";
 import { Icon } from "../icons/Icon";
 import { AppHeader } from "../layout/AppHeader";
 import { IconButton } from "../layout/IconButton";
 import { bodyPad, ScreenScroll } from "../layout/ScreenScroll";
+import { buildDeckSlides } from "../lib/deck-generation";
+import { exportDeckPdf } from "../lib/deck-pdf";
 import { mergeDataRoomItems, mergeDeckSlides } from "../lib/deck-outline";
 import { scoreColor } from "../lib/score";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { CardTitle } from "../ui/CardTitle";
+import { DeckSlideshow } from "../ui/DeckSlideshow";
 import { Divider } from "../ui/Divider";
 import { Eyebrow } from "../ui/Eyebrow";
 import { NavCard } from "../ui/NavCard";
 import { SlideTile } from "../ui/SlideTile";
 import { StatusPill, type StatusType } from "../ui/StatusPill";
-import type { DeckGeneration, GoFn, RaiseSignalAnalysis } from "../types";
+import type {
+  DeckGeneration,
+  GoFn,
+  RaiseSignalAnalysis,
+} from "../types";
 
 type DashboardScreenProps = {
   go: GoFn;
   analysis: RaiseSignalAnalysis;
   onAnalysisChange: (analysis: RaiseSignalAnalysis) => void;
   deckGeneration: DeckGeneration;
-  onGenerateDeck: () => void;
 };
 
 const legendColors: Record<string, { color: string; bg: string }> = {
@@ -77,17 +85,19 @@ export function DashboardScreen({
   analysis,
   onAnalysisChange,
   deckGeneration,
-  onGenerateDeck,
 }: DashboardScreenProps) {
+  const [slideshowIndex, setSlideshowIndex] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const { company } = analysis;
   const deckSlides = mergeDeckSlides(analysis.deck.slides);
+  const slideDrafts = useMemo(() => buildDeckSlides(analysis), [analysis]);
   const dataRoomItems = mergeDataRoomItems(analysis.deck.dataRoom);
-  const totalSlides = deckSlides.length;
+  const totalSlides = slideDrafts.length;
   const generatedSlideCount = deckGeneration.slides.length;
   const deckGenerationProgress = Math.round((generatedSlideCount / totalSlides) * 100);
   const activeGeneratedSlide =
     deckGeneration.slides[deckGeneration.slides.length - 1] ||
-    deckSlides.find((slide) => slide.n === deckGeneration.activeSlideNumber);
+    slideDrafts.find((slide) => slide.n === deckGeneration.activeSlideNumber);
   const deckCounts = deckSlides.reduce(
     (acc, slide) => {
       acc[slide.s] = (acc[slide.s] || 0) + 1;
@@ -121,6 +131,15 @@ export function DashboardScreen({
           : metric,
       ),
     });
+  }
+
+  async function downloadDeck() {
+    setDownloading(true);
+    try {
+      await exportDeckPdf(analysis, slideDrafts);
+    } finally {
+      setDownloading(false);
+    }
   }
 
   return (
@@ -392,9 +411,20 @@ export function DashboardScreen({
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-              {deckSlides.map((slide) => (
-                <SlideTile key={slide.n} {...slide} />
-              ))}
+              {slideDrafts.map((slide, index) => {
+                const outline = deckSlides.find((item) => item.n === slide.n);
+
+                return (
+                  <SlideTile
+                    key={slide.n}
+                    n={slide.n}
+                    t={slide.t}
+                    s={outline?.s || "Good"}
+                    headline={slide.headline}
+                    onClick={() => setSlideshowIndex(index)}
+                  />
+                );
+              })}
             </div>
             <div>
               <ProgressBar
@@ -413,12 +443,12 @@ export function DashboardScreen({
                       {deckGeneration.status === "generating"
                         ? `Generating slide ${deckGeneration.activeSlideNumber || 1}`
                         : deckGeneration.status === "complete"
-                          ? "Deck generated"
-                          : "Generate investor deck"}
+                          ? "Deck ready"
+                          : "Investor deck PDF"}
                     </div>
                     <p className="mt-1 mb-0 text-[12.5px] leading-[1.35] text-[var(--ink-3)]">
                       {deckGeneration.status === "idle"
-                        ? "Uses the latest company profile and revenue metrics."
+                        ? "Open any slide instantly or download the full deck as a PDF."
                         : `${generatedSlideCount}/${totalSlides} slides ready${
                             activeGeneratedSlide ? ` · ${activeGeneratedSlide.t}` : ""
                           }`}
@@ -433,12 +463,12 @@ export function DashboardScreen({
                 <Button
                   full
                   size="sm"
-                  icon="spark"
-                  onClick={onGenerateDeck}
-                  disabled={deckGeneration.status === "generating"}
+                  icon="doc"
+                  onClick={downloadDeck}
+                  disabled={downloading}
                   style={{ marginTop: 12 }}
                 >
-                  {deckGeneration.status === "complete" ? "Regenerate deck" : "Generate deck"}
+                  {downloading ? "Preparing PDF..." : "Download deck PDF"}
                 </Button>
               </div>
               <div className="mt-1.5">
@@ -473,6 +503,14 @@ export function DashboardScreen({
           />
         </div>
       </div>
+      {slideshowIndex !== null && (
+        <DeckSlideshow
+          slides={slideDrafts}
+          initialIndex={slideshowIndex}
+          analysis={analysis}
+          onClose={() => setSlideshowIndex(null)}
+        />
+      )}
     </ScreenScroll>
   );
 }

@@ -1,22 +1,31 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { ProgressBar } from "../charts/ProgressBar";
 import { Icon } from "../icons/Icon";
 import { AppHeader } from "../layout/AppHeader";
 import { bodyPad, ScreenScroll } from "../layout/ScreenScroll";
+import { buildDeckSlides } from "../lib/deck-generation";
+import { exportDeckPdf } from "../lib/deck-pdf";
 import { mergeDataRoomItems, mergeDeckSlides } from "../lib/deck-outline";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { CardTitle } from "../ui/CardTitle";
+import { DeckSlideshow } from "../ui/DeckSlideshow";
+import { PitchSlide } from "../ui/PitchSlide";
 import { SlideTile } from "../ui/SlideTile";
 import { StatusPill, type StatusType } from "../ui/StatusPill";
-import type { DeckGeneration, GoFn, RaiseSignalAnalysis } from "../types";
+import type {
+  DeckGeneration,
+  GoFn,
+  RaiseSignalAnalysis,
+} from "../types";
 
 type DeckScreenProps = {
   go: GoFn;
   analysis: RaiseSignalAnalysis;
   deckGeneration: DeckGeneration;
-  onGenerateDeck: () => void;
 };
 
 const legendColors: Record<string, { color: string; bg: string }> = {
@@ -30,16 +39,16 @@ export function DeckScreen({
   go,
   analysis,
   deckGeneration,
-  onGenerateDeck,
 }: DeckScreenProps) {
+  const [slideshowIndex, setSlideshowIndex] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const deckSlides = mergeDeckSlides(analysis.deck.slides);
+  const slideDrafts = useMemo(() => buildDeckSlides(analysis), [analysis]);
+  const visibleSlides = deckGeneration.slides.length > 0 ? deckGeneration.slides : slideDrafts;
   const dataRoomItems = mergeDataRoomItems(analysis.deck.dataRoom);
-  const totalSlides = deckSlides.length;
+  const totalSlides = slideDrafts.length;
   const generatedSlideCount = deckGeneration.slides.length;
   const deckGenerationProgress = Math.round((generatedSlideCount / totalSlides) * 100);
-  const activeSlide =
-    deckGeneration.slides[deckGeneration.slides.length - 1] ||
-    deckSlides.find((slide) => slide.n === deckGeneration.activeSlideNumber);
   const counts = deckSlides.reduce(
     (a, s) => {
       a[s.s] = (a[s.s] || 0) + 1;
@@ -47,6 +56,20 @@ export function DeckScreen({
     },
     {} as Record<string, number>,
   );
+
+  function openSlideByNumber(slideNumber: number) {
+    const nextIndex = slideDrafts.findIndex((slide) => slide.n === slideNumber);
+    setSlideshowIndex(nextIndex === -1 ? 0 : nextIndex);
+  }
+
+  async function downloadDeck() {
+    setDownloading(true);
+    try {
+      await exportDeckPdf(analysis, slideDrafts);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <ScreenScroll>
@@ -62,8 +85,8 @@ export function DeckScreen({
             right={
               <span className="num text-xs text-[var(--ink-3)]">
                 {deckGeneration.status === "idle"
-                  ? `${deckSlides.length} slides`
-                  : `${generatedSlideCount}/${totalSlides} generated`}
+                  ? `${slideDrafts.length} slides`
+                  : `${generatedSlideCount}/${totalSlides} ready`}
               </span>
             }
           >
@@ -73,16 +96,12 @@ export function DeckScreen({
             <div className="mb-2.5 flex items-start justify-between gap-3">
               <div>
                 <div className="text-sm font-[650] text-[var(--ink)]">
-                  {deckGeneration.status === "generating"
-                    ? `Generating ${activeSlide?.t || "deck"}`
-                    : deckGeneration.status === "complete"
-                      ? "Investor deck is ready"
-                      : "Generate a deck from current data"}
+                  {downloading
+                    ? "Preparing PDF download"
+                    : "Investor deck preview is ready"}
                 </div>
                 <p className="mt-1 mb-0 text-[12.5px] leading-[1.4] text-[var(--ink-3)]">
-                  {deckGeneration.status === "idle"
-                    ? "Edits to MRR, company profile, and plan inputs are used when generation starts."
-                    : "Slides are drafted one by one from the latest analysis snapshot."}
+                  Slides are rendered instantly and can be downloaded as a PDF.
                 </p>
               </div>
               <span className="num shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[var(--ink-2)]">
@@ -98,12 +117,12 @@ export function DeckScreen({
             )}
             <Button
               full
-              icon="spark"
-              onClick={onGenerateDeck}
-              disabled={deckGeneration.status === "generating"}
+              icon="doc"
+              onClick={downloadDeck}
+              disabled={downloading}
               style={{ marginTop: 12 }}
             >
-              {deckGeneration.status === "complete" ? "Regenerate deck" : "Generate deck"}
+              {downloading ? "Preparing PDF..." : "Download deck PDF"}
             </Button>
           </div>
           <div className="mb-4 flex flex-wrap gap-1.5">
@@ -124,31 +143,43 @@ export function DeckScreen({
               ))}
           </div>
           <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {deckSlides.map((sl) => (
-              <div key={sl.n} className="relative">
-                <SlideTile {...sl} />
-                {deckGeneration.status !== "idle" && (
-                  <div
-                    className="pointer-events-none absolute inset-0 rounded-[13px] border"
-                    style={{
-                      borderColor: deckGeneration.slides.some((slide) => slide.n === sl.n)
-                        ? "var(--success)"
-                        : deckGeneration.activeSlideNumber === sl.n
-                          ? "var(--warning)"
-                          : "transparent",
-                      boxShadow:
-                        deckGeneration.activeSlideNumber === sl.n
-                          ? "0 0 0 3px var(--warning-soft)"
-                          : undefined,
-                    }}
+            {slideDrafts.map((slide, index) => {
+              const outline = deckSlides.find((item) => item.n === slide.n);
+
+              return (
+                <div key={slide.n} className="relative">
+                  <SlideTile
+                    n={slide.n}
+                    t={slide.t}
+                    s={outline?.s || "Good"}
+                    headline={slide.headline}
+                    onClick={() => setSlideshowIndex(index)}
                   />
-                )}
-              </div>
-            ))}
+                  {deckGeneration.status !== "idle" && (
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-[13px] border"
+                      style={{
+                        borderColor: deckGeneration.slides.some(
+                          (generatedSlide) => generatedSlide.n === slide.n,
+                        )
+                          ? "var(--success)"
+                          : deckGeneration.activeSlideNumber === slide.n
+                            ? "var(--warning)"
+                            : "transparent",
+                        boxShadow:
+                          deckGeneration.activeSlideNumber === slide.n
+                            ? "0 0 0 3px var(--warning-soft)"
+                            : undefined,
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
-          {deckGeneration.slides.length > 0 && (
+          {visibleSlides.length > 0 && (
             <div className="grid gap-2.5">
-              {deckGeneration.slides.map((slide) => (
+              {visibleSlides.map((slide) => (
                 <div
                   key={slide.n}
                   className="rounded-[14px] border border-[var(--hairline)] bg-white px-3.5 py-3"
@@ -165,6 +196,19 @@ export function DeckScreen({
                   <div className="text-sm font-semibold leading-[1.35] text-[var(--ink)]">
                     {slide.headline}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => openSlideByNumber(slide.n)}
+                    className="mt-2 block w-full text-left"
+                    aria-label={`Open ${slide.t} in slideshow`}
+                  >
+                    <PitchSlide
+                      slide={slide}
+                      analysis={analysis}
+                      totalSlides={totalSlides}
+                      compact
+                    />
+                  </button>
                   <p className="mt-1.5 mb-2 text-[12.5px] leading-[1.4] text-[var(--ink-2)]">
                     {slide.speakerNotes}
                   </p>
@@ -234,6 +278,14 @@ export function DeckScreen({
           </div>
         </Card>
       </div>
+      {slideshowIndex !== null && (
+        <DeckSlideshow
+          slides={slideDrafts}
+          initialIndex={slideshowIndex}
+          analysis={analysis}
+          onClose={() => setSlideshowIndex(null)}
+        />
+      )}
     </ScreenScroll>
   );
 }

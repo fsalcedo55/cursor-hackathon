@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AppShell } from "./layout/AppShell";
 import { BottomNav, type TabId } from "./layout/BottomNav";
 import { TopNav } from "./layout/TopNav";
-import { buildDeckSlides } from "./lib/deck-generation";
 import { AnalyzeOverlay } from "./screens/AnalyzeOverlay";
 import { AnalyzeScreen } from "./screens/AnalyzeScreen";
 import { DashboardScreen } from "./screens/DashboardScreen";
@@ -13,7 +12,11 @@ import { DeckScreen } from "./screens/DeckScreen";
 import { ImproveScreen } from "./screens/ImproveScreen";
 import { InvestorsScreen } from "./screens/InvestorsScreen";
 import { PlanScreen } from "./screens/PlanScreen";
-import type { DeckGeneration, RaiseSignalAnalysis, ScreenId } from "./types";
+import type {
+  DeckGeneration,
+  RaiseSignalAnalysis,
+  ScreenId,
+} from "./types";
 
 const TABS: TabId[] = ["analyze", "dashboard", "investors"];
 
@@ -31,8 +34,6 @@ export function RaiseSignalApp() {
   const [connected, setConnected] = useState<Record<string, boolean>>({
     Stripe: true,
   });
-  const deckGenerationRun = useRef(0);
-
   const screen = hist[hist.length - 1];
 
   useEffect(() => {
@@ -62,7 +63,6 @@ export function RaiseSignalApp() {
   }
 
   function updateAnalysis(nextAnalysis: RaiseSignalAnalysis) {
-    deckGenerationRun.current += 1;
     setAnalysis(nextAnalysis);
     setDeckGeneration({ status: "idle", slides: [] });
   }
@@ -102,45 +102,6 @@ export function RaiseSignalApp() {
     }
   }
 
-  async function generateDeck() {
-    if (!analysis || deckGeneration.status === "generating") return;
-
-    const runId = deckGenerationRun.current + 1;
-    deckGenerationRun.current = runId;
-    const slideDrafts = buildDeckSlides(analysis);
-
-    setDir("fwd");
-    setHist(["deck"]);
-    setDeckGeneration({
-      status: "generating",
-      activeSlideNumber: slideDrafts[0]?.n,
-      slides: [],
-    });
-
-    for (const slide of slideDrafts) {
-      setDeckGeneration((current) => ({
-        ...current,
-        activeSlideNumber: slide.n,
-      }));
-
-      await new Promise((resolve) => setTimeout(resolve, 550));
-      if (deckGenerationRun.current !== runId) return;
-
-      setDeckGeneration((current) => ({
-        status: "generating",
-        activeSlideNumber: slide.n,
-        slides: [...current.slides, slide],
-      }));
-    }
-
-    if (deckGenerationRun.current === runId) {
-      setDeckGeneration({
-        status: "complete",
-        slides: slideDrafts,
-      });
-    }
-  }
-
   function renderScreen() {
     switch (screen) {
       case "analyze":
@@ -162,7 +123,6 @@ export function RaiseSignalApp() {
             analysis={analysis}
             onAnalysisChange={updateAnalysis}
             deckGeneration={deckGeneration}
-            onGenerateDeck={generateDeck}
           />
         ) : (
           <AnalyzeScreen
@@ -185,7 +145,6 @@ export function RaiseSignalApp() {
             go={go}
             analysis={analysis}
             deckGeneration={deckGeneration}
-            onGenerateDeck={generateDeck}
           />
         ) : null;
       case "improve":
