@@ -12,11 +12,9 @@ import { Card } from "../ui/Card";
 import { CardTitle } from "../ui/CardTitle";
 import { Divider } from "../ui/Divider";
 import { Eyebrow } from "../ui/Eyebrow";
-import { MetricStat } from "../ui/MetricStat";
 import { NavCard } from "../ui/NavCard";
 import { SlideTile } from "../ui/SlideTile";
 import { StatusPill, type StatusType } from "../ui/StatusPill";
-import { TrendChip } from "../ui/TrendChip";
 import type { GoFn, RaiseSignalAnalysis } from "../types";
 
 type DashboardScreenProps = {
@@ -47,31 +45,26 @@ function EditableValue({
   placeholder: string;
   onCommit: (value: string) => void;
 }) {
-  const unknown = isUnknown(value);
-
   return (
     <div>
       <div className="mb-0.5 text-[11.5px] font-[550] text-[var(--ink-3)]">
         {label}
       </div>
-      {unknown ? (
-        <input
-          aria-label={label}
-          placeholder={placeholder}
-          onBlur={(event) => {
-            const next = event.currentTarget.value.trim();
-            if (next) onCommit(next);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.currentTarget.blur();
-            }
-          }}
-          className="w-full rounded-[10px] border border-[var(--hairline)] bg-[var(--bg)] px-2.5 py-2 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--ink-4)]"
-        />
-      ) : (
-        <div className="text-sm font-semibold text-[var(--ink)]">{value}</div>
-      )}
+      <input
+        aria-label={label}
+        defaultValue={isUnknown(value) ? "" : value}
+        placeholder={placeholder}
+        onBlur={(event) => {
+          const next = event.currentTarget.value.trim();
+          if (next && next !== value) onCommit(next);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.currentTarget.blur();
+          }
+        }}
+        className="w-full rounded-[10px] border border-[var(--hairline)] bg-[var(--bg)] px-2.5 py-2 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--ink-4)] focus:border-[var(--primary)] focus:bg-white"
+      />
     </div>
   );
 }
@@ -144,7 +137,7 @@ export function DashboardScreen({
                 </span>
               </div>
             </div>
-            <ScoreRing value={analysis.score} size={104} stroke={11} suffix="/100" />
+            <ScoreRing value={analysis.score} size={104} stroke={11} />
           </div>
           <p className="my-3.5 text-sm leading-[1.45] text-[var(--ink-2)]">
             {analysis.scoreSummary}
@@ -305,32 +298,15 @@ export function DashboardScreen({
             Revenue metrics
           </CardTitle>
           <div className="grid grid-cols-2 gap-x-3 gap-y-[18px] sm:grid-cols-3 lg:grid-cols-6">
-            {analysis.revenueMetrics.map((metric, index) =>
-              metric.missing || isUnknown(metric.value) ? (
-                <EditableValue
-                  key={metric.label}
-                  label={metric.label}
-                  value={metric.value}
-                  placeholder={`Add ${metric.label}`}
-                  onCommit={(value) => updateRevenueMetric(index, value)}
-                />
-              ) : (
-                <MetricStat
-                  key={metric.label}
-                  label={metric.label}
-                  value={metric.value}
-                  accent={metric.warning ? "var(--warning)" : undefined}
-                  trend={
-                    metric.trend ? (
-                      <TrendChip
-                        value={metric.trend.replace("%", "")}
-                        positive={!metric.trend.trim().startsWith("-")}
-                      />
-                    ) : undefined
-                  }
-                />
-              ),
-            )}
+            {analysis.revenueMetrics.map((metric, index) => (
+              <EditableValue
+                key={metric.label}
+                label={metric.label}
+                value={metric.value}
+                placeholder={`Add ${metric.label}`}
+                onCommit={(value) => updateRevenueMetric(index, value)}
+              />
+            ))}
           </div>
           {!criticalMetricCompleted && (
             <>
