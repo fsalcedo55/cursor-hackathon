@@ -137,7 +137,7 @@ export default function Home() {
           href="/demo"
           className="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/15 transition hover:-translate-y-0.5 hover:bg-zinc-800"
         >
-          Start my raise
+          Raise my signal
         </Link>
       </header>
 
@@ -173,7 +173,7 @@ export default function Home() {
                 href="/demo"
                 className="rounded-full bg-zinc-950 px-7 py-4 text-center text-sm font-semibold text-white shadow-xl shadow-zinc-950/20 transition hover:-translate-y-0.5 hover:bg-zinc-800"
               >
-                Start my raise
+                Raise my signal
               </Link>
               <a
                 href="#plan"
@@ -367,7 +367,7 @@ export default function Home() {
               href="/demo"
               className="mt-8 inline-flex rounded-full bg-white px-7 py-4 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-amber-100"
             >
-              Start my raise
+              Raise my signal
             </Link>
           </div>
         </section>

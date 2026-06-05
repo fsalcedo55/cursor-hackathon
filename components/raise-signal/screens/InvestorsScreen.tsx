@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 
 import { Icon } from "../icons/Icon";
 import { AppHeader } from "../layout/AppHeader";
-import { IconButton } from "../layout/IconButton";
 import { bodyPad, pageX, ScreenScroll } from "../layout/ScreenScroll";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -192,39 +191,14 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
   const localCount = analysis.investors.filter((inv) => inv.geography === "Local").length;
   const draftsReady = analysis.investors.filter((inv) => inv.outreachDraft).length;
   const approvedCount = Object.values(approved).filter(Boolean).length;
+  const topMatches = analysis.investors.slice(0, 5);
 
   return (
     <ScreenScroll>
       <AppHeader
         title="Investor Pipeline"
-        sub={`${analysis.investors.length} ranked targets · ${draftsReady} outreach drafts ready`}
-        right={<IconButton name="filter" />}
+        sub="Best matches first, outreach under founder control"
       />
-
-      <div className={`rs-scroll flex gap-2 overflow-x-auto ${pageX} pt-0.5 pb-3`}>
-        {filters.map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setActiveFilter(f)}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--hairline)] bg-[var(--card)] px-3 py-2 text-[13px] font-[550] whitespace-nowrap text-[var(--ink-2)] shadow-[var(--shadow-sm)]"
-            style={{
-              background: activeFilter === f ? "var(--primary)" : "var(--card)",
-              color: activeFilter === f ? "#fff" : "var(--ink-2)",
-              borderColor: activeFilter === f ? "var(--primary)" : "var(--hairline)",
-            }}
-          >
-            {f}
-            {f !== "All" && (
-              <Icon
-                name="chevDown"
-                size={14}
-                color={activeFilter === f ? "rgba(255,255,255,0.82)" : "var(--ink-4)"}
-              />
-            )}
-          </button>
-        ))}
-      </div>
 
       <div className={bodyPad}>
         <Card
@@ -267,6 +241,64 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
             </div>
           </div>
         </Card>
+
+        <section className="mb-4">
+          <div className="mb-2 flex items-center justify-between px-1">
+            <div>
+              <h2 className="m-0 text-base font-bold tracking-[-0.02em] text-[var(--ink)]">
+                Top matches to review first
+              </h2>
+              <p className="mt-0.5 mb-0 text-[12.5px] text-[var(--ink-3)]">
+                Ranked by fit, local access, stage, thesis, and likely intro path.
+              </p>
+            </div>
+            <span className="num text-xs font-semibold text-[var(--ink-3)]">
+              {topMatches.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {topMatches.map((inv) => (
+              <InvestorCard
+                key={`top-${inv.name}`}
+                inv={inv}
+                selected={selected?.name === inv.name}
+                saved={Boolean(saved[inv.name])}
+                onSelect={() => setSelectedName(inv.name)}
+                onSave={() => setSaved((current) => ({ ...current, [inv.name]: !current[inv.name] }))}
+              />
+            ))}
+          </div>
+        </section>
+
+        <div className="mb-3">
+          <div className="mb-2 px-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-3)]">
+            Refine the list
+          </div>
+          <div className={`rs-scroll -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 ${pageX}`}>
+            {filters.map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setActiveFilter(f)}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--hairline)] bg-[var(--card)] px-3 py-2 text-[13px] font-[550] whitespace-nowrap text-[var(--ink-2)] shadow-[var(--shadow-sm)]"
+                style={{
+                  background: activeFilter === f ? "var(--primary)" : "var(--card)",
+                  color: activeFilter === f ? "#fff" : "var(--ink-2)",
+                  borderColor: activeFilter === f ? "var(--primary)" : "var(--hairline)",
+                }}
+              >
+                {f}
+                {f !== "All" && (
+                  <Icon
+                    name="chevDown"
+                    size={14}
+                    color={activeFilter === f ? "rgba(255,255,255,0.82)" : "var(--ink-4)"}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
           <div className="flex flex-col gap-4">

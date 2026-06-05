@@ -21,11 +21,9 @@ const CONNECTORS = [
 ] as const;
 
 const FEATURES = [
-  { icon: "target" as const, t: "Fundraising readiness score" },
-  { icon: "doc" as const, t: "Investor-ready narrative" },
-  { icon: "coins" as const, t: "Valuation estimate" },
-  { icon: "investors" as const, t: "VC matching" },
-  { icon: "vault" as const, t: "Data room checklist" },
+  { icon: "doc" as const, t: "AI company read" },
+  { icon: "target" as const, t: "Readiness evidence" },
+  { icon: "coins" as const, t: "Raise recommendation" },
 ];
 
 type AnalyzeScreenProps = {
@@ -58,19 +56,23 @@ export function AnalyzeScreen({
         </span>
       </div>
 
-      <div className={`${bodyPad} lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-6`}>
-        <div className="rise mb-5.5 mt-4 sm:mt-5 lg:mb-0 lg:max-w-none">
+      <div className={`${bodyPad} mx-auto max-w-5xl`}>
+        <div className="rise mt-5 text-center sm:mt-8">
           <Eyebrow style={{ color: "var(--primary-700)" }}>Fundraising agent</Eyebrow>
-          <h1 className="mt-2.5 mb-2.5 text-[34px] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-[var(--ink)] sm:text-4xl lg:max-w-[720px] lg:text-[64px]">
-            Build your raise signal
+          <h1 className="mx-auto mt-3 mb-3 max-w-3xl text-[40px] leading-[1.02] font-bold tracking-[-0.04em] text-balance text-[var(--ink)] sm:text-5xl lg:text-[68px]">
+            Raise your signal before you raise capital.
           </h1>
-          <p className="m-0 max-w-2xl text-[15px] leading-normal text-[var(--ink-2)] sm:text-base lg:text-lg">
-            Paste your startup URL. We&apos;ll analyze your business, metrics,
-            market, valuation, deck, and investor fit.
+          <p className="mx-auto m-0 max-w-2xl text-[15px] leading-normal text-[var(--ink-2)] sm:text-base lg:text-lg">
+            Paste your startup URL. RaiseSignal will explain what it thinks
+            your company is, how fundable it looks, and what to do next.
           </p>
         </div>
 
-        <Card className="rise lg:mt-5" pad={16} style={{ animationDelay: ".05s" }}>
+        <Card
+          className="rise mx-auto mt-7 max-w-2xl"
+          pad={18}
+          style={{ animationDelay: ".05s" }}
+        >
           <label className="text-xs font-semibold tracking-[0.01em] text-[var(--ink-3)]">
             Startup URL
           </label>
@@ -85,7 +87,7 @@ export function AnalyzeScreen({
             />
           </div>
           <Button full icon="spark" onClick={onAnalyze} disabled={analyzing}>
-            {analyzing ? "Building signal..." : "Build my raise signal"}
+            {analyzing ? "Building signal..." : "Raise my signal"}
           </Button>
           {error && (
             <div className="mt-3 flex gap-2 rounded-[13px] bg-[var(--danger-soft)] px-3 py-3 text-[12.5px] leading-[1.45] text-[var(--danger)]">
@@ -95,15 +97,27 @@ export function AnalyzeScreen({
           )}
         </Card>
 
-        <div className="mt-6 mb-2.5 flex items-center justify-between lg:col-span-2">
-          <Eyebrow>Connect metrics · optional</Eyebrow>
+        <div className="rise mx-auto mt-4 grid max-w-2xl grid-cols-1 gap-2.5 sm:grid-cols-3" style={{ animationDelay: ".08s" }}>
+          {FEATURES.map((f) => (
+            <div
+              key={f.t}
+              className="flex items-center justify-center gap-2 rounded-[14px] border border-[var(--hairline)] bg-white/60 px-3 py-3 text-[13px] font-semibold text-[var(--ink)] shadow-[var(--shadow-sm)]"
+            >
+              <Icon name={f.icon} size={16} color="var(--primary-700)" />
+              <span>{f.t}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-7 mb-2.5 flex items-center justify-between">
+          <Eyebrow>Optional private signal</Eyebrow>
           {nConn > 0 && (
             <span className="text-[11.5px] font-semibold text-[var(--success)]">
               {nConn} connected
             </span>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:col-span-2">
+        <div className="grid grid-cols-2 gap-2 opacity-85 sm:grid-cols-4">
           {CONNECTORS.map((name) => {
             const on = connected[name];
             return (
@@ -136,40 +150,12 @@ export function AnalyzeScreen({
             );
           })}
         </div>
-        <div className="mt-3.5 flex items-center gap-1.5 text-[var(--ink-3)] lg:col-span-2">
+        <div className="mt-3.5 flex items-center justify-center gap-1.5 text-[var(--ink-3)]">
           <Icon name="info" size={15} />
           <span className="text-[12.5px]">
-            You can start without connecting anything.
+            Start with just your public website. Metrics can be added later.
           </span>
         </div>
-
-        <Card
-          className="rise mt-5.5 lg:col-span-2"
-          tone="tint"
-          style={{
-            background:
-              "linear-gradient(165deg, rgba(255,255,255,0.92) 0%, var(--primary-tint) 100%)",
-          }}
-        >
-          <div className="mb-3.5 flex items-center gap-2">
-            <Icon name="rocket" size={19} color="var(--primary-700)" />
-            <span className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--ink)]">
-              A raise workflow ready for approval
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-            {FEATURES.map((f) => (
-              <div key={f.t} className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-white/90 text-[var(--primary-700)] shadow-[var(--shadow-sm)]">
-                  <Icon name={f.icon} size={16} />
-                </div>
-                <span className="text-sm font-[550] text-[var(--ink)]">
-                  {f.t}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
       </div>
     </ScreenScroll>
   );
