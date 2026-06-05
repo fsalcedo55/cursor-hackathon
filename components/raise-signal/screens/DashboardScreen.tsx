@@ -101,6 +101,12 @@ export function DashboardScreen({
       !metric.missing &&
       !isUnknown(metric.value),
   );
+  const localInvestorCount = analysis.investors.filter(
+    (investor) => investor.geography === "Local",
+  ).length;
+  const outreachDraftCount = analysis.investors.filter(
+    (investor) => investor.outreachDraft,
+  ).length;
 
   function updateCompanyField(field: keyof typeof company, value: string) {
     onAnalysisChange({
@@ -470,6 +476,12 @@ export function DashboardScreen({
             title="Fundraising Plan"
             sub={analysis.plan.raiseAmount}
             onClick={() => go("plan")}
+          />
+          <NavCard
+            icon="investors"
+            title="Investor Pipeline"
+            sub={`${localInvestorCount} local targets · ${outreachDraftCount} drafts ready`}
+            onClick={() => go("investors")}
           />
         </div>
       </div>
