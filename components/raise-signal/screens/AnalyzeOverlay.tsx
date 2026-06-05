@@ -34,13 +34,14 @@ export function AnalyzeOverlay({ url }: AnalyzeOverlayProps) {
     const id = window.setInterval(() => {
       const elapsed = Date.now() - startedAt;
       const progress = Math.min(1, elapsed / ANALYSIS_ANIMATION_MS);
+      const waitingPulse = 82 + Math.round(Math.sin(elapsed / 420) * 6);
 
-      setDone(Math.min(steps.length, Math.floor(elapsed / stepMs)));
-      setScoreValue(Math.min(90, Math.max(8, Math.round(progress * 90))));
-
-      if (elapsed >= ANALYSIS_ANIMATION_MS) {
-        window.clearInterval(id);
-      }
+      setDone(Math.min(steps.length - 1, Math.floor(elapsed / stepMs)));
+      setScoreValue(
+        progress < 1
+          ? Math.min(88, Math.max(8, Math.round(progress * 88)))
+          : waitingPulse,
+      );
     }, 120);
 
     return () => window.clearInterval(id);
