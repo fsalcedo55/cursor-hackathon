@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import { mergeDataRoomItems, mergeDeckSlides } from "@/components/raise-signal/lib/deck-outline";
+import { buildInvestorMatches } from "@/components/raise-signal/lib/investor-matching";
 
 const scoreItemSchema = z.object({
   label: z.string(),
@@ -499,7 +500,7 @@ function completeAnalysisEstimates(analysis: Analysis, pageText: string, url: st
   const scale = inferCompanyScale(analysis, pageText, url);
   const plan = planForScale(scale, analysis.score);
 
-  return {
+  const completed = {
     ...analysis,
     company: {
       ...analysis.company,
@@ -539,6 +540,11 @@ function completeAnalysisEstimates(analysis: Analysis, pageText: string, url: st
       slides: mergeDeckSlides(analysis.deck.slides),
       dataRoom: mergeDataRoomItems(analysis.deck.dataRoom),
     },
+  };
+
+  return {
+    ...completed,
+    investors: buildInvestorMatches({ ...completed, url }),
   };
 }
 
@@ -657,7 +663,7 @@ Return this JSON shape exactly. Every array must contain at least one item; incl
     ],
     "valuationLogic": [{"t":"reason","ok":true}]
   },
-  "investors": [{"name":"investor","fit":0-100,"initials":"VC","color":"#3B4EE8","stage":"Seed","activity":"Recently active","why":["reason","reason","reason"]}],
+  "investors": [{"name":"placeholder investor","fit":0-100,"initials":"VC","color":"#3B4EE8","stage":"Seed","activity":"Recently active","why":["reason","reason","reason"]}],
   "deck": {
     "readiness": 0-100,
     "slides": [

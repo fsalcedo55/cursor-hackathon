@@ -20,8 +20,9 @@ export function AnalyzeOverlay({ url }: AnalyzeOverlayProps) {
     },
     { t: "Parsing product & market", icon: "target" },
     { t: "Pulling revenue metrics", icon: "coins" },
-    { t: "Estimating valuation", icon: "pieChart" },
-    { t: "Matching investors", icon: "investors" },
+    { t: "Scanning local investor graph", icon: "investors" },
+    { t: "Ranking Miami-area targets", icon: "target" },
+    { t: "Drafting approval-ready outreach", icon: "mail" },
   ];
 
   const [done, setDone] = useState(0);
