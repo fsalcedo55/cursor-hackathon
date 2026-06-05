@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Head from "next/head";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -132,12 +133,12 @@ export default function Home() {
             Outcomes
           </a>
         </nav>
-        <a
-          href="#start"
+        <Link
+          href="/demo"
           className="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/15 transition hover:-translate-y-0.5 hover:bg-zinc-800"
         >
           Start my raise
-        </a>
+        </Link>
       </header>
 
       <main id="top">
@@ -168,12 +169,12 @@ export default function Home() {
               )}
             </div>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#start"
+              <Link
+                href="/demo"
                 className="rounded-full bg-zinc-950 px-7 py-4 text-center text-sm font-semibold text-white shadow-xl shadow-zinc-950/20 transition hover:-translate-y-0.5 hover:bg-zinc-800"
               >
                 Start my raise
-              </a>
+              </Link>
               <a
                 href="#plan"
                 className="rounded-full border border-zinc-300 bg-white/70 px-7 py-4 text-center text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:border-zinc-950"
@@ -362,12 +363,12 @@ export default function Home() {
               investor pipeline, deck notes, outreach drafts, meeting prep, and
               follow-up workflow.
             </p>
-            <a
-              href="#top"
+            <Link
+              href="/demo"
               className="mt-8 inline-flex rounded-full bg-white px-7 py-4 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-amber-100"
             >
               Start my raise
-            </a>
+            </Link>
           </div>
         </section>
       </main>
