@@ -13,7 +13,7 @@ export function BottomNav({ active, onNav }: BottomNavProps) {
   return (
     <div
       className="lg:hidden flex shrink-0 items-center justify-around border-t border-[var(--hairline)] px-3.5 pt-2 pb-[max(22px,env(safe-area-inset-bottom))] backdrop-blur-[20px] backdrop-saturate-[180%]"
-      style={{ background: "rgba(255,255,255,0.82)" }}
+      style={{ background: "rgba(255,255,255,0.76)" }}
     >
       {NAV_ITEMS.map((it) => {
         const on = active === it.id;
@@ -23,7 +23,7 @@ export function BottomNav({ active, onNav }: BottomNavProps) {
             type="button"
             onClick={() => onNav(it.id)}
             className="flex flex-1 flex-col items-center gap-1 py-1 transition-colors duration-200"
-            style={{ color: on ? "var(--primary)" : "var(--ink-4)" }}
+            style={{ color: on ? "var(--primary-700)" : "var(--ink-4)" }}
           >
             <Icon name={it.icon} size={24} />
             <span

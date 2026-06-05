@@ -23,21 +23,21 @@ type ButtonProps = {
 const variants: Record<ButtonVariant, CSSProperties> = {
   primary: {
     color: "#fff",
-    background:
-      "linear-gradient(180deg, var(--primary) 0%, var(--primary-600) 100%)",
+    background: "var(--ink)",
     boxShadow:
-      "0 1px 2px rgba(28,40,120,0.25), 0 8px 20px -6px rgba(49,64,206,0.5), inset 0 1px 0 rgba(255,255,255,0.22)",
+      "0 1px 2px rgba(24,24,27,0.18), 0 10px 24px -10px rgba(24,24,27,0.45), inset 0 1px 0 rgba(255,255,255,0.12)",
   },
   secondary: {
     color: "var(--primary-700)",
     background: "var(--primary-soft)",
+    border: "1px solid color-mix(in srgb, var(--primary), #fff 70%)",
   },
   ghost: {
     color: "var(--ink-2)",
     background: "transparent",
     border: "1px solid var(--hairline)",
   },
-  dark: { color: "#fff", background: "var(--ink)" },
+  dark: { color: "#fff", background: "var(--agent)" },
 };
 
 export function Button({

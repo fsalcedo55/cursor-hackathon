@@ -1,6 +1,6 @@
 export function scoreColor(v: number) {
   if (v >= 80) return "var(--success)";
-  if (v >= 65) return "var(--primary)";
+  if (v >= 65) return "var(--primary-700)";
   if (v >= 50) return "var(--warning)";
   return "var(--danger)";
 }

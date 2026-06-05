@@ -52,7 +52,7 @@ export function AnalyzeOverlay({ url }: AnalyzeOverlayProps) {
     <div
       className="anim-tab fixed inset-0 z-[90] flex min-h-dvh flex-col items-center justify-center overflow-hidden px-10"
       style={{
-        background: "rgba(244,248,255,0.86)",
+        background: "rgba(248,241,229,0.9)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
       }}
@@ -66,7 +66,7 @@ export function AnalyzeOverlay({ url }: AnalyzeOverlayProps) {
         />
       </div>
       <div className="mb-1 text-[17px] font-bold tracking-[-0.02em] text-[var(--ink)]">
-        Analyzing your startup
+        Building your raise signal
       </div>
       <div className="mb-6 text-[13px] text-[var(--ink-3)]">
         Building your fundraising signal…
@@ -87,7 +87,7 @@ export function AnalyzeOverlay({ url }: AnalyzeOverlayProps) {
                   background: isDone
                     ? "var(--success)"
                     : active
-                      ? "var(--primary)"
+                      ? "var(--ink)"
                       : "var(--hairline)",
                 }}
               >

@@ -54,7 +54,7 @@ function statusTone(status?: InvestorMatch["pipelineStatus"]) {
     return { color: "var(--warning)", bg: "var(--warning-soft)" };
   }
 
-  return { color: "var(--primary)", bg: "var(--primary-soft)" };
+  return { color: "var(--primary-700)", bg: "var(--primary-soft)" };
 }
 
 function SourceBadge({ label }: { label: string }) {
@@ -86,8 +86,8 @@ function InvestorCard({
       pad={16}
       onClick={onSelect}
       style={{
-        borderColor: selected ? "color-mix(in srgb, var(--primary), #fff 35%)" : undefined,
-        boxShadow: selected ? "0 10px 30px rgba(49,64,206,0.12)" : undefined,
+        borderColor: selected ? "color-mix(in srgb, var(--primary), #fff 38%)" : undefined,
+        boxShadow: selected ? "0 12px 32px rgba(120,53,15,0.14)" : undefined,
       }}
     >
       <div className="mb-3 flex items-start gap-3">
@@ -145,7 +145,7 @@ function InvestorCard({
 
       <div className="flex gap-2">
         <Button size="sm" full icon="mail" onClick={onSelect}>
-          Review email drop
+          Review outreach
         </Button>
         <button
           type="button"
@@ -157,7 +157,7 @@ function InvestorCard({
           style={{
             border: saved ? "none" : "1px solid var(--hairline)",
             background: saved ? "var(--primary-soft)" : "var(--card)",
-            color: saved ? "var(--primary)" : "var(--ink-3)",
+            color: saved ? "var(--primary-700)" : "var(--ink-3)",
           }}
         >
           <Icon name={saved ? "check" : "bookmark"} size={18} />
@@ -197,7 +197,7 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
     <ScreenScroll>
       <AppHeader
         title="Investor Pipeline"
-        sub={`${analysis.investors.length} ranked targets · ${draftsReady} email drops ready`}
+        sub={`${analysis.investors.length} ranked targets · ${draftsReady} outreach drafts ready`}
         right={<IconButton name="filter" />}
       />
 
@@ -231,35 +231,38 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
           className="rise mb-3.5 overflow-hidden"
           pad={18}
           style={{
-            background: "linear-gradient(145deg, #FBFCFF 0%, var(--primary-tint) 100%)",
+            background:
+              "linear-gradient(145deg, var(--agent) 0%, var(--ink) 100%)",
+            border: "none",
+            boxShadow: "0 18px 44px rgba(24,24,27,0.18)",
           }}
         >
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 px-2.5 py-1 text-[12px] font-bold text-[var(--primary)] shadow-[var(--shadow-sm)]">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-amber-300 px-2.5 py-1 text-[12px] font-bold text-zinc-950 shadow-[var(--shadow-sm)]">
                 <Icon name="spark" size={14} />
-                Agent investor run complete
+                Agent run complete
               </div>
-              <h2 className="m-0 text-[22px] font-bold tracking-[-0.03em] text-[var(--ink)]">
-                Found {localCount} local targets and drafted {draftsReady} email drops
+              <h2 className="m-0 text-[22px] font-bold tracking-[-0.03em] text-white">
+                Found {localCount} local targets and drafted {draftsReady} outreach drafts
               </h2>
-              <p className="mt-2 mb-0 max-w-2xl text-sm leading-[1.45] text-[var(--ink-2)]">
+              <p className="mt-2 mb-0 max-w-2xl text-sm leading-[1.45] text-zinc-300">
                 Ranked for {analysis.company.name} using Miami/South Florida proximity,
                 stage fit, thesis overlap, check size, and likely intro path.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-[15px] bg-white/75 px-3 py-2.5">
-                <div className="num text-lg font-semibold text-[var(--ink)]">{localCount}</div>
-                <div className="text-[10.5px] font-semibold text-[var(--ink-3)]">LOCAL</div>
+              <div className="rounded-[15px] bg-white/10 px-3 py-2.5">
+                <div className="num text-lg font-semibold text-white">{localCount}</div>
+                <div className="text-[10.5px] font-semibold text-zinc-400">LOCAL</div>
               </div>
-              <div className="rounded-[15px] bg-white/75 px-3 py-2.5">
-                <div className="num text-lg font-semibold text-[var(--ink)]">{draftsReady}</div>
-                <div className="text-[10.5px] font-semibold text-[var(--ink-3)]">DRAFTS</div>
+              <div className="rounded-[15px] bg-white/10 px-3 py-2.5">
+                <div className="num text-lg font-semibold text-white">{draftsReady}</div>
+                <div className="text-[10.5px] font-semibold text-zinc-400">DRAFTS</div>
               </div>
-              <div className="rounded-[15px] bg-white/75 px-3 py-2.5">
-                <div className="num text-lg font-semibold text-[var(--ink)]">{approvedCount}</div>
-                <div className="text-[10.5px] font-semibold text-[var(--ink-3)]">APPROVED</div>
+              <div className="rounded-[15px] bg-white/10 px-3 py-2.5">
+                <div className="num text-lg font-semibold text-white">{approvedCount}</div>
+                <div className="text-[10.5px] font-semibold text-zinc-400">APPROVED</div>
               </div>
             </div>
           </div>
@@ -306,7 +309,7 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
                   <span
                     className="rounded-full px-2.5 py-1 text-[11.5px] font-semibold"
                     style={{
-                      color: approved[selected.name] ? "var(--success)" : "var(--primary)",
+                      color: approved[selected.name] ? "var(--success)" : "var(--primary-700)",
                       background: approved[selected.name]
                         ? "var(--success-soft)"
                         : "var(--primary-soft)",
@@ -350,7 +353,7 @@ export function InvestorsScreen({ analysis }: InvestorsScreenProps) {
               />
 
               <label className="mb-1 block text-[11.5px] font-semibold text-[var(--ink-3)]">
-                Email drop
+                Outreach draft
               </label>
               <textarea
                 value={editedDraft.body}

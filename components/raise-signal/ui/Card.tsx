@@ -17,12 +17,15 @@ export function Card({
   className = "",
   tone,
 }: CardProps) {
-  const bg = tone === "tint" ? "var(--primary-tint)" : "var(--card)";
+  const bg =
+    tone === "tint"
+      ? "linear-gradient(160deg, rgba(255,255,255,0.88) 0%, var(--primary-tint) 100%)"
+      : "rgba(255,255,255,0.86)";
 
   return (
     <div
       onClick={onClick}
-      className={`relative border border-[var(--hairline)] shadow-[var(--shadow-md)] ${className}`}
+      className={`relative border border-[var(--hairline)] shadow-[var(--shadow-md)] backdrop-blur-sm ${className}`}
       style={{
         background: bg,
         borderRadius: "var(--r-card)",

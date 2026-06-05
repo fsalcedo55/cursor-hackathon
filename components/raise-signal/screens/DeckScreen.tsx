@@ -21,7 +21,7 @@ type DeckScreenProps = {
 
 const legendColors: Record<string, { color: string; bg: string }> = {
   Strong: { color: "var(--success)", bg: "var(--success-soft)" },
-  Good: { color: "var(--primary)", bg: "var(--primary-soft)" },
+  Good: { color: "var(--primary-700)", bg: "var(--primary-soft)" },
   "Needs work": { color: "var(--warning)", bg: "var(--warning-soft)" },
   Missing: { color: "var(--danger)", bg: "var(--danger-soft)" },
 };
@@ -77,7 +77,7 @@ export function DeckScreen({
                     ? `Generating ${activeSlide?.t || "deck"}`
                     : deckGeneration.status === "complete"
                       ? "Investor deck is ready"
-                      : "Generate a deck from current data"}
+                      : "Draft a deck from current data"}
                 </div>
                 <p className="mt-1 mb-0 text-[12.5px] leading-[1.4] text-[var(--ink-3)]">
                   {deckGeneration.status === "idle"
@@ -103,7 +103,7 @@ export function DeckScreen({
               disabled={deckGeneration.status === "generating"}
               style={{ marginTop: 12 }}
             >
-              {deckGeneration.status === "complete" ? "Regenerate deck" : "Generate deck"}
+              {deckGeneration.status === "complete" ? "Refresh deck draft" : "Draft investor deck"}
             </Button>
           </div>
           <div className="mb-4 flex flex-wrap gap-1.5">
@@ -172,7 +172,7 @@ export function DeckScreen({
                     {slide.sourceFacts.map((fact) => (
                       <span
                         key={fact}
-                        className="rounded-full bg-[var(--primary-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]"
+                        className="rounded-full bg-[var(--primary-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-700)]"
                       >
                         {fact}
                       </span>

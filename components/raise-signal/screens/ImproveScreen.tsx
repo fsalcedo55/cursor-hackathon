@@ -22,14 +22,14 @@ export function ImproveScreen({ go, analysis }: ImproveScreenProps) {
 
   return (
     <ScreenScroll>
-      <AppHeader back onBack={() => go("dashboard")} title="Improve your score" />
+      <AppHeader back onBack={() => go("dashboard")} title="Prioritize fixes" />
       <div className={`${bodyPad} lg:grid lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-4`}>
         <Card
           className="rise lg:sticky lg:top-24 lg:self-start"
           pad={18}
           style={{
             background:
-              "linear-gradient(160deg, #FBFCFF 0%, var(--primary-tint) 100%)",
+              "linear-gradient(160deg, rgba(255,255,255,0.94) 0%, var(--primary-tint) 100%)",
           }}
         >
           <Eyebrow>Score projection</Eyebrow>
@@ -46,7 +46,7 @@ export function ImproveScreen({ go, analysis }: ImproveScreenProps) {
                 style={{
                   width: `${potential}%`,
                   background:
-                    "linear-gradient(90deg, var(--primary), var(--success))",
+                    "linear-gradient(90deg, var(--primary-700), var(--success))",
                 }}
               />
               <Icon
@@ -80,8 +80,8 @@ export function ImproveScreen({ go, analysis }: ImproveScreenProps) {
                   className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[11px]"
                   style={{
                     background:
-                      i === 0 ? "var(--primary)" : "var(--primary-soft)",
-                    color: i === 0 ? "#fff" : "var(--primary)",
+                      i === 0 ? "var(--ink)" : "var(--primary-soft)",
+                    color: i === 0 ? "#fff" : "var(--primary-700)",
                   }}
                 >
                   <Icon name={a.icon} size={19} />
@@ -105,7 +105,7 @@ export function ImproveScreen({ go, analysis }: ImproveScreenProps) {
                         icon="bolt"
                         onClick={() => go("dashboard")}
                       >
-                        Start with highest impact
+                        Start highest-impact fix
                       </Button>
                     </div>
                   )}
