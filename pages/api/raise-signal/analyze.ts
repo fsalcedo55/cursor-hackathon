@@ -1,3 +1,4 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import { mergeDataRoomItems, mergeDeckSlides } from "@/components/raise-signal/lib/deck-outline";
@@ -105,6 +106,10 @@ const requestSchema = z.object({
 });
 
 type Analysis = z.infer<typeof analysisSchema>;
+type ApiError = {
+  error: string;
+  status: number;
+};
 type RevenueMetric = Analysis["revenueMetrics"][number];
 type ImprovementIcon = Analysis["improvements"][number]["icon"];
 
@@ -234,6 +239,10 @@ async function fetchStartupContext(url: string) {
   ]
     .join("\n\n---\n\n")
     .slice(0, 32000);
+}
+
+function apiError(error: string, status: number): ApiError {
+  return { error, status };
 }
 
 function hasKnownValue(value: string) {
@@ -541,14 +550,11 @@ async function analyzeWithOpenAI({
   url: string;
   connectors: string[];
   pageText: string;
-}) {
+}): Promise<Analysis | ApiError> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    return Response.json(
-      { error: "OPENAI_API_KEY is not configured on the server." },
-      { status: 500 },
-    );
+    return apiError("OPENAI_API_KEY is not configured on the server.", 500);
   }
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -689,46 +695,48 @@ For improvements.icon, use ONLY one of these exact strings: "coins", "refresh", 
 
   if (!response.ok) {
     const message = await response.text();
-    return Response.json(
-      { error: `OpenAI request failed: ${message.slice(0, 300)}` },
-      { status: 502 },
-    );
+    return apiError(`OpenAI request failed: ${message.slice(0, 300)}`, 502);
   }
 
   const json = await response.json();
   const content = json.choices?.[0]?.message?.content;
 
   if (typeof content !== "string") {
-    return Response.json({ error: "OpenAI did not return JSON content." }, { status: 502 });
+    return apiError("OpenAI did not return JSON content.", 502);
   }
 
   try {
     return analysisSchema.parse(normalizeRawAnalysis(JSON.parse(content)));
   } catch (error) {
-    return Response.json(
-      {
-        error:
-          error instanceof Error
-            ? `OpenAI returned an invalid analysis: ${error.message}`
-            : "OpenAI returned an invalid analysis.",
-      },
-      { status: 502 },
+    return apiError(
+      error instanceof Error
+        ? `OpenAI returned an invalid analysis: ${error.message}`
+        : "OpenAI returned an invalid analysis.",
+      502,
     );
   }
 }
 
-export async function POST(request: Request) {
-  const parsed = requestSchema.safeParse(await request.json().catch(() => null));
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method not allowed." });
+  }
+
+  const parsed = requestSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return Response.json({ error: "A startup URL is required." }, { status: 400 });
+    return res.status(400).json({ error: "A startup URL is required." });
   }
 
   let url: string;
   try {
     url = normalizeUrl(parsed.data.url);
   } catch {
-    return Response.json({ error: "Enter a valid startup URL." }, { status: 400 });
+    return res.status(400).json({ error: "Enter a valid startup URL." });
   }
 
   const pageText = await fetchStartupContext(url);
@@ -738,11 +746,11 @@ export async function POST(request: Request) {
     pageText,
   });
 
-  if (analysis instanceof Response) {
-    return analysis;
+  if ("error" in analysis) {
+    return res.status(analysis.status).json({ error: analysis.error });
   }
 
   const completedAnalysis = completeAnalysisEstimates(analysis, pageText, url);
 
-  return Response.json({ analysis: { ...completedAnalysis, url } });
+  return res.status(200).json({ analysis: { ...completedAnalysis, url } });
 }
