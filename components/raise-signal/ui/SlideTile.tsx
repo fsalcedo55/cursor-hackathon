@@ -2,7 +2,7 @@ import type { StatusType } from "./StatusPill";
 
 const statusColor: Record<StatusType, string> = {
   Strong: "var(--success)",
-  Good: "var(--primary)",
+  Good: "var(--primary-700)",
   "Needs work": "var(--warning)",
   Missing: "var(--danger)",
   Done: "var(--success)",

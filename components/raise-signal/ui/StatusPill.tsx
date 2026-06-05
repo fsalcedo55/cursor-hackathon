@@ -10,7 +10,7 @@ export type StatusType =
 
 const STATUS: Record<StatusType, { c: string; b: string }> = {
   Strong: { c: "var(--success)", b: "var(--success-soft)" },
-  Good: { c: "var(--primary)", b: "var(--primary-soft)" },
+  Good: { c: "var(--primary-700)", b: "var(--primary-soft)" },
   "Needs work": { c: "var(--warning)", b: "var(--warning-soft)" },
   Missing: { c: "var(--danger)", b: "var(--danger-soft)" },
   Done: { c: "var(--success)", b: "var(--success-soft)" },

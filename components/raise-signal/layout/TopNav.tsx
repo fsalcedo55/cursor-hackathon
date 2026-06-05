@@ -19,7 +19,7 @@ export function TopNav({ active, onNav }: TopNavProps) {
           </span>
         </div>
 
-        <nav className="flex items-center gap-1 rounded-full border border-[var(--hairline)] bg-[var(--card)] p-1 shadow-[var(--shadow-sm)]">
+        <nav className="flex items-center gap-1 rounded-full border border-[var(--hairline)] bg-white/75 p-1 shadow-[var(--shadow-sm)]">
           {NAV_ITEMS.map((it) => {
             const on = active === it.id;
 
@@ -30,7 +30,7 @@ export function TopNav({ active, onNav }: TopNavProps) {
                 onClick={() => onNav(it.id)}
                 className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors duration-200"
                 style={{
-                  color: on ? "var(--primary)" : "var(--ink-2)",
+                  color: on ? "var(--ink)" : "var(--ink-2)",
                   background: on ? "var(--primary-soft)" : "transparent",
                   fontWeight: on ? 650 : 500,
                 }}

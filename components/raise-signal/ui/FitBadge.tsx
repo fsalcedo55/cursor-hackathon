@@ -7,7 +7,7 @@ export function FitBadge({ value }: FitBadgeProps) {
     value >= 90
       ? "var(--success)"
       : value >= 85
-        ? "var(--primary)"
+        ? "var(--primary-700)"
         : "var(--cyan)";
   const bg =
     value >= 90

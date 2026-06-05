@@ -23,7 +23,7 @@ export function CardTitle({
       style={style}
     >
       {icon && (
-        <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--primary-soft)] text-[var(--primary)]">
+        <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--primary-soft)] text-[var(--primary-700)]">
           <Icon name={icon} size={17} color={iconColor} />
         </div>
       )}

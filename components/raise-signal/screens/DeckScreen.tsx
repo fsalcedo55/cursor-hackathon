@@ -30,7 +30,7 @@ type DeckScreenProps = {
 
 const legendColors: Record<string, { color: string; bg: string }> = {
   Strong: { color: "var(--success)", bg: "var(--success-soft)" },
-  Good: { color: "var(--primary)", bg: "var(--primary-soft)" },
+  Good: { color: "var(--primary-700)", bg: "var(--primary-soft)" },
   "Needs work": { color: "var(--warning)", bg: "var(--warning-soft)" },
   Missing: { color: "var(--danger)", bg: "var(--danger-soft)" },
 };
@@ -98,7 +98,11 @@ export function DeckScreen({
                 <div className="text-sm font-[650] text-[var(--ink)]">
                   {downloading
                     ? "Preparing PDF download"
-                    : "Investor deck preview is ready"}
+                    : deckGeneration.status === "generating"
+                      ? `Generating slide ${deckGeneration.activeSlideNumber || 1}`
+                      : deckGeneration.status === "complete"
+                      ? "Investor deck is ready"
+                      : "Investor deck preview is ready"}
                 </div>
                 <p className="mt-1 mb-0 text-[12.5px] leading-[1.4] text-[var(--ink-3)]">
                   Slides are rendered instantly and can be downloaded as a PDF.
@@ -216,7 +220,7 @@ export function DeckScreen({
                     {slide.sourceFacts.map((fact) => (
                       <span
                         key={fact}
-                        className="rounded-full bg-[var(--primary-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]"
+                        className="rounded-full bg-[var(--primary-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-700)]"
                       >
                         {fact}
                       </span>

@@ -68,6 +68,28 @@ export type InvestorMatch = {
   stage: string;
   activity: string;
   why: string[];
+  firm?: string;
+  role?: string;
+  location?: string;
+  geography?: "Local" | "Regional" | "Thesis fit";
+  sectors?: string[];
+  checkSize?: string;
+  tier?: "Best local targets" | "Warm intro candidates" | "Regional thesis fit";
+  sources?: {
+    label: string;
+    url?: string;
+  }[];
+  contactPath?: string;
+  riskNotes?: string[];
+  recommendedAction?: string;
+  pipelineStatus?: "Draft ready" | "Needs intro" | "Shortlisted" | "Researching";
+  outreachDraft?: {
+    type: "Cold email" | "Warm intro request" | "Follow-up";
+    approvalStatus: "Ready for founder approval" | "Needs founder edits";
+    angle: string;
+    subject: string;
+    body: string;
+  };
 };
 
 export type DeckSlide = {
