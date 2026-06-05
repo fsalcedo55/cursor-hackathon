@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@source "../pages";
+@source "../components";
+
 :root {
   --primary: #3b4ee8;
   --primary-600: color-mix(in srgb, var(--primary), #000 13%);
